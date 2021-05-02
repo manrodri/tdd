@@ -5,7 +5,7 @@ from blog import Blog
 class BlogTest(TestCase):
 
     def test_create_post(self):
-        b = Blog('Manuel', 'Test Blog')
+        b = Blog('Test Blog','Manuel')
         b.create_post('post title', 'blah blah blah')
 
         self.assertEqual(1, len(b.posts))
@@ -18,7 +18,7 @@ class BlogTest(TestCase):
         self.assertEqual('foo', b.posts[1].content)
 
     def test_json(self):
-        b = Blog('Manuel', 'Test Blog')
+        b = Blog('Test Blog','Manuel')
         b.create_post('foo', 'bar')
 
         expected = {

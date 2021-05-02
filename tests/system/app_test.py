@@ -6,10 +6,11 @@ from blog import Blog
 
 
 class AppTest(TestCase):
-    def test_print_blogs(self):
+    def setUp(self) -> None:
         b = Blog('Test', 'Test Blog')
         app.blogs = {'Test': b}
 
+    def test_print_blogs(self):
         # patch takes a module.function as parameter
         with patch('builtins.print') as mocked_print:
             app.print_blogs()
@@ -62,8 +63,6 @@ class AppTest(TestCase):
             self.assertIsNotNone(app.blogs.get('Test'))
 
     def test_ask_read_blog(self):
-        blog = Blog('Test', 'Test Author')
-        app.blogs['Test'] = blog
         # blog with no posts
         with patch('builtins.input', return_value='Test'):
             with patch('builtins.print') as mokced_print:
@@ -71,20 +70,20 @@ class AppTest(TestCase):
                 mokced_print.assert_not_called()
 
         # blog with posts
-        blog.create_post('Test post', 'Test Content')
+        app.blogs['Test'].create_post('Test post', 'Test Content')
         with patch('builtins.input', return_value='Test'):
             with patch('builtins.print') as mokced_print:
                 app.ask_read_blog()
                 mokced_print. \
-                    assert_called_once_with(app.POST_TEMPLATE.format(blog.posts[0].title, blog.posts[0].content))
+                    assert_called_once_with(app.POST_TEMPLATE.format(
+                    app.blogs['Test'].posts[0].title, app.blogs['Test'].posts[0].content))
 
     def test_ask_create_blog(self):
-        blog = Blog('Test', 'Test Author')
-        app.blogs['Test'] = blog
+
 
         with patch('builtins.input') as mocked_input:
             mocked_input.side_effect = ('Test', "Test Title", "Test Content")
             app.ask_create_post()
 
-            self.assertEqual('Test Title', blog.posts[0].title)
-            self.assertTrue('Test Content' == blog.posts[0].content)
+            self.assertEqual('Test Title', app.blogs['Test'].posts[0].title)
+            self.assertTrue('Test Content' == app.blogs['Test'].posts[0].content)
